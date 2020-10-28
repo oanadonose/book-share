@@ -14,6 +14,9 @@ const app = express();
 	console.log('db connected');
 })();
 
+app.use(bodyparser.urlencoded({extended:false}))
+app.use(bodyparser.json());
+
 app.get('/', (req, res, next) => res.send('hi'));
 app.use('/api', router);
 
