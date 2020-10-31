@@ -28,7 +28,7 @@ const bookSchema = new Schema({
 		type: String,
 		required: false
 	}
-})
+});
 
 const book = mongoose.model('Book', bookSchema);
 

@@ -17,11 +17,11 @@ const app = express();
 	console.log('db connected');
 })();
 
-app.use(bodyparser.urlencoded({ extended:false }))
+app.use(bodyparser.urlencoded({ extended:false }));
 app.use(bodyparser.json());
 passportConfig(passport);
 
-app.get('/', (req, res, next) => res.send('hi'));
+app.get('/', (req, res) => res.send('hi'));
 app.use('/api', router);
 
 const port = process.env.PORT || 8080;
