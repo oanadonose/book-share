@@ -1,5 +1,4 @@
 import express from 'express';
-import session from 'express-session';
 import bodyparser from 'body-parser';
 import mongoose from 'mongoose';
 import passport from 'passport';
@@ -20,18 +19,10 @@ const app = express();
 
 app.use(bodyparser.urlencoded({ extended:false }))
 app.use(bodyparser.json());
-app.use(passport.initialize());
 passportConfig(passport);
 
 app.get('/', (req, res, next) => res.send('hi'));
 app.use('/api', router);
-app.use(session({ 
-	secret: process.env.secretOrKey,
-	resave: false,
-	saveUninitialized: true, 
-	cookie: { secure: true, maxAge: 60000 }
-}))
-app.use(passport.session());
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => {

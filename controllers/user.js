@@ -80,10 +80,10 @@ export const logout = async (req, res) => {
 	}
 }
 
-export const displayUser = (req, res) => {
+export const getUser = (req, res) => {
 	res.json({
 		id: req.user.id,
-		name: req.user.name,
+		name: req.params.name,
 		email: req.user.email
 	})
 }
