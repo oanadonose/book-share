@@ -2,7 +2,7 @@ import express from 'express';
 import passport from 'passport';
 
 import {register, login, logout, getUser} from '../controllers/user.js';
-//import { getBooks, addBook, getBookById, removeBook } from '../controllers/book.js';
+import { validateUser } from '../helpers/validation/schema.js';
 
 const router = express.Router();
 
@@ -16,12 +16,12 @@ router.get('/', (req, res) => {
 //@route 	POST api/register
 //@desc 	Register user
 //@access 	Public
-router.post('/register', register);
+router.post('/register', validateUser, register);
 
 //@route 	POST api/login
 //@desc 	Login an existing user
 //@access 	Public
-router.post('/login' , login);
+router.post('/login', validateUser, login);
 
 //@route POST api/logout
 //@desc Logout current user

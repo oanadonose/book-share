@@ -2,7 +2,7 @@ import express from 'express';
 import passport from 'passport';
 
 import { getBooks, getBookById, addBook, removeBook, updateBook } from '../controllers/book.js';
-import { validateBook } from '../helpers/validation/book.js';
+import { validateBook } from '../helpers/validation/schema.js';
 
 const bookRouter = express.Router();
 
