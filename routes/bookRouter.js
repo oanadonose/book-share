@@ -2,6 +2,7 @@ import express from 'express';
 import passport from 'passport';
 
 import { getBooks, getBookById, addBook, removeBook, updateBook } from '../controllers/book.js';
+import { validateBook } from '../helpers/validation/book.js';
 
 const bookRouter = express.Router();
 
@@ -18,7 +19,7 @@ bookRouter.get('/:id', getBookById);
 //@route POST api/books/add
 //@desc Add a new book
 //@access Private
-bookRouter.post('/add', passport.authenticate('jwt', { session: false }), addBook);
+bookRouter.post('/add', validateBook, passport.authenticate('jwt', { session: false }), addBook);
 
 //@route DELETE api/books/:id
 //@desc Delete a book listing - only allowed if user owns the book
@@ -28,6 +29,6 @@ bookRouter.delete('/:id', passport.authenticate('jwt', { session: false }), remo
 //@route PUT api/books/:id
 //@desc Update a book listing - only allowed if user owns the book
 //@access Private
-bookRouter.put('/:id', passport.authenticate('jwt', { session: false }), updateBook);
+bookRouter.put('/:id', validateBook, passport.authenticate('jwt', { session: false }), updateBook);
 
 export default bookRouter;
