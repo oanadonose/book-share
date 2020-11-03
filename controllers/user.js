@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jsonwebtoken from 'jsonwebtoken';
 import User from '../models/user.js';
 import {validateAuthInput} from '../helpers/validation/auth.js';
+import owns from '../helpers/rights.js';
 
 export const register = async (req, res) => {
 	const { errors, isValid } = validateAuthInput(req.body);
@@ -87,6 +88,41 @@ export const getUser = async (req, res) => {
 		return res.status(200).send(user);
 	} catch (err) {
 		console.log('err in getUser', err);
+		return res.status(500).send(err);
+	}
+};
+
+export const updateUser = async (req, res) => {
+	const updates = {};
+	if(req.body.name) {
+		updates.name = req.body.name;
+	}
+	if(req.body.email) {
+		updates.email = req.body.email;
+	}
+	if(req.body.password) {
+		updates.password = req.body.password;
+	}
+	if(req.body.address) {
+		updates.address = req.body.address;
+	}
+	try {
+		if(!owns(req.user.id, req.params.id)) return res.status(403).send(`${req.user.name} does not have permission to update ${req.params.id}`);
+		await User.findByIdAndUpdate({_id: req.params.id}, updates);
+		return res.status(200).send('updated successfully');
+	} catch (err) {
+		console.log('err in updateUser', err);
+		return res.status(500).send(err);
+	}
+};
+
+export const deleteUser = async (req, res) => {
+	try {
+		if(!owns(req.user.id, req.params.id)) return res.status(403).send(`${req.user.name} does not have permission to update ${req.params.id}`);
+		await User.findByIdAndDelete({_id: req.params.id});
+		return res.status(200).send('deleted successfully');
+	} catch (err) {
+		console.log('err in deleteUser', err);
 		return res.status(500).send(err);
 	}
 };
