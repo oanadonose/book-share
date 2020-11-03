@@ -48,7 +48,7 @@ export const login = async (req, res) => {
 		const match = await bcrypt.compare(password, user.password);
 		if(match) {
 			const payload = {id: user.id, name: user.name};
-			jsonwebtoken.sign(payload, process.env.secretOrKey, {expiresIn: 360}, (err, token) => {
+			jsonwebtoken.sign(payload, process.env.secretOrKey, {expiresIn: 36000}, (err, token) => {
 				res.json({
 					success: true,
 					message: 'Login success',
@@ -70,6 +70,7 @@ export const logout = async (req, res) => {
 	if(req.user) {
 		try {
 			await req.logout();
+			req.user = null;
 		} catch(err) {
 			console.log('err in logout', err);
 		}
@@ -80,10 +81,12 @@ export const logout = async (req, res) => {
 	}
 };
 
-export const getUser = (req, res) => {
-	res.json({
-		id: req.user.id,
-		name: req.params.name,
-		email: req.user.email
-	});
+export const getUser = async (req, res) => {
+	try {
+		const user = await User.findOne({_id: req.params.id});
+		return res.status(200).send(user);
+	} catch (err) {
+		console.log('err in getUser', err);
+		return res.status(500).send(err);
+	}
 };

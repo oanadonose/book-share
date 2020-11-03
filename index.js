@@ -4,13 +4,14 @@ import mongoose from 'mongoose';
 import passport from 'passport';
 import passportConfig from './helpers/passport.js';
 import router from './routes/router.js';
+import bookRouter from './routes/bookRouter.js';
 
 const app = express();
 
 
 (async () => {
 	try {
-		await mongoose.connect(process.env.dbURL, { useUnifiedTopology: true, useNewUrlParser: true });
+		await mongoose.connect(process.env.dbURL, { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false });
 	} catch (err) {
 		console.log('DB connection error', err);
 	}
@@ -23,6 +24,7 @@ passportConfig(passport);
 
 app.get('/', (req, res) => res.send('hi'));
 app.use('/api', router);
+app.use('/api/books', bookRouter);
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
