@@ -4,14 +4,10 @@ import owns from '../helpers/rights.js';
 
 //get all available books
 export const getBooks = async (req, res) => {
+	let books = [];
 	try {
-		const books = await Book.find();
-		if(!books) {
-			return res.status(200).send('no books available');
-		}
-		else {
-			return res.status(200).send(books);
-		}
+		books = await Book.find();
+		return res.status(200).send(books);
 	} catch (err) {
 		return res.status(400).send(err);
 	}

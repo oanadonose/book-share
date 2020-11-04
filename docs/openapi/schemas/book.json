@@ -1,0 +1,61 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"definitions": {
+		"book": {
+			"$id": "#book",
+			"title": "Book",
+			"description": "Data to register a new book.",
+			"type": "object",
+			"properties": {
+				"title": {
+					"description": "book title",
+					"type": "string"
+				},
+				"author": {
+					"description": "book author",
+					"type": "string"
+				},
+				"ISBN": {
+					"description": "book ISBN",
+					"type": "string"
+				},
+				"photo": {
+					"description": "book photo",
+					"type": "string"
+				},
+				"genre": {
+					"description": "book genre",
+					"type": "string"
+				}
+			},
+			"required": ["title","author"]
+		}
+	},
+	"id": "/books",
+	"title": "Book",
+	"description": "A book uploaded by a user",
+	"type": "object",
+	"properties": {
+		"title": {
+			"description": "The title of the book",
+			"type": "string"
+		},
+		"author": {
+			"description": "The author of the book",
+			"type": "string"
+		},
+		"ISBN": {
+			"description": "The International Standard Book Number",
+			"type": "string"
+		},
+		"photo": {
+			"description": "A main image for the book",
+			"type": "uri"
+		},
+		"genre": {
+			"description": "Describes the genre of the book",
+			"type": "string"
+		}
+	},
+	"required": ["title","author"]
+}

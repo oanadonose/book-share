@@ -25,6 +25,7 @@ passportConfig(passport);
 app.get('/', (req, res) => res.send('hi'));
 app.use('/api/users', userRouter);
 app.use('/api/books', bookRouter);
+app.use(express.static('docs/openapi'));
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => {

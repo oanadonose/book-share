@@ -1,6 +1,10 @@
+/**
+ * A module to run JSON Schema based validation on request/response data.
+ * @module helpers/validation
+ */
+
 import jsonschema from 'jsonschema';
-import bookSchema from '../../schemas/book.schema.js';
-import userSchema from '../../schemas/user.schema.js';
+import {bookSchema, userSchema} from '../../docs/openapi/schemas/schemas.schema.js';
 
 const v = new jsonschema.Validator();
 

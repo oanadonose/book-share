@@ -1,0 +1,192 @@
+openapi: 3.0.0
+info:
+  title: Public Library API
+  description: A simple public book lending api.
+  version: 0.1.1
+servers:
+  - url: http://localhost:5000/api
+    description: Local server    
+tags:
+  - name: Users
+    description: API endpoints for user management.
+  - name: Books
+    description: API endpoints for books management.
+paths:
+  /users/{id}:
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: string
+        required: true
+        description: ID of user
+    get:
+      tags:
+        - Users
+      summary: Get user by id.
+      responses:
+        '200':
+          description: Returns an object with user record.
+          content:
+            application/json:
+              schema:
+                $ref: ./user.json#/definitions/user
+        '404':
+          description: User not found.  
+    put:
+      tags:
+        - Users
+      summary: Update user by id.
+      responses:
+        '200':
+          description: Returns an object with the updated user details.
+          content:
+            application/json:
+              schema:
+                $ref: ./user.json#/definitions/user
+        '403':
+          description: Users can only update their own record. 
+        '404':
+          description: User not found.
+    delete:
+      tags:
+        - Users
+      summary: Delete user by id.
+      responses:
+        '200':
+          description: Returns the Deletion confirmation.
+        '403':
+          description: Users can only delete their own record. 
+        '404':
+          description: User not found.
+  /users/register:
+    post:
+      tags:
+        - Users
+      summary: Register a new user record.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./user.json#/definitions/user
+      responses:
+        '200':
+          description: Returns an object with the new user record.
+          content:
+            application/json:
+              schema:
+                $ref: ./user.json#/definitions/user
+        '403':
+          description: Email must be unique.
+  /users/login:
+    post:
+      tags:
+        - Users
+      summary: Login user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Returns login confirmation and authentication token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  token:
+                    type: string
+        '404':
+          description: User not found.
+        '401':
+          description: Incorrect credentials.
+  /books:
+    get:
+      tags:
+        - Books
+      summary: Get all books.
+      responses:
+        '200':
+          description: Returns an array of all available books.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: ./book.json#/definitions/book
+  /books/{id}:
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: string
+        required: true
+        description: ID of user
+    get:
+      tags:
+        - Books
+      summary: Get book by id.
+      responses:
+        '200':
+          description: Returns book object.
+          content:
+            application/json:
+              schema:
+                $ref: ./book.json#/definitions/book
+        '404':
+          description: No book found.
+    put:
+      tags:
+        - Books
+      summary: Update book by id.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./book.json#/definitions/book
+      responses:
+        '200':
+          description: Returns updated book object.
+          content:
+            application/json:
+              schema:
+                $ref: ./book.json#/definitions/book
+        '403':
+          description: Users can only update books they own.
+        '404':
+          description: Book not found.
+  /books/add:
+    post:
+      tags:
+        - Books 
+      summary: Add a new book.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./book.json#/definitions/book
+      responses:
+        '200':
+          description: Returns new book object.
+          content:
+            application/json:
+              schema:
+                $ref: ./book.json#/definitions/book
+
+          

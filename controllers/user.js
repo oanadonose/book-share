@@ -24,7 +24,7 @@ export const register = async (req, res) => {
 		}
 		else {
 			errors.register = 'Email already exists.';
-			return res.status(400).send(errors);
+			return res.status(403).send(errors);
 		}
 	} catch(err) {
 		return res.status(400).send(errors);
@@ -34,7 +34,7 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
 	const { errors, isValid } = validateAuthInput(req.body);
 	if(!isValid) {
-		return res.status(400).send(errors);
+		return res.status(401).send(errors);
 	}
 
 	const email = req.body.email;
@@ -44,7 +44,7 @@ export const login = async (req, res) => {
 		const user = await User.findOne({email});
 		if(!user) {
 			errors.email = 'User not found';
-			return res.status(400).send(errors);
+			return res.status(404).send(errors);
 		}
 		const match = await bcrypt.compare(password, user.password);
 		if(match) {
@@ -52,14 +52,13 @@ export const login = async (req, res) => {
 			jsonwebtoken.sign(payload, process.env.secretOrKey, {expiresIn: 36000}, (err, token) => {
 				res.json({
 					success: true,
-					message: 'Login success',
 					token: 'Bearer ' + token
 				});
 			});
 		}
 		else {
 			errors.password = 'Incorrect password';
-			return res.status(401).json(errors);
+			return res.status(401).send(errors);
 		}
 	} catch (err) {
 		console.log('err', err);
@@ -85,6 +84,7 @@ export const logout = async (req, res) => {
 export const getUser = async (req, res) => {
 	try {
 		const user = await User.findOne({_id: req.params.id});
+		if(!user) return res.status(404).send('User not found');
 		return res.status(200).send(user);
 	} catch (err) {
 		console.log('err in getUser', err);
@@ -107,17 +107,21 @@ export const updateUser = async (req, res) => {
 		updates.address = req.body.address;
 	}
 	try {
+		const oldUser = await User.findOne({_id: req.params.id});
+		if(!oldUser) return res.status(404).send('User not found');
 		if(!owns(req.user.id, req.params.id)) return res.status(403).send(`${req.user.name} does not have permission to update ${req.params.id}`);
-		await User.findByIdAndUpdate({_id: req.params.id}, updates);
-		return res.status(200).send('updated successfully');
+		const newUser = await User.findByIdAndUpdate({_id: req.params.id}, updates, { new: true });
+		return res.status(200).send(newUser);
 	} catch (err) {
 		console.log('err in updateUser', err);
-		return res.status(500).send(err);
+		return res.status(400).send(err);
 	}
 };
 
 export const deleteUser = async (req, res) => {
 	try {
+		const user = await User.findOne({_id: req.params.id});
+		if(!user) return res.status(404).send('User not found');
 		if(!owns(req.user.id, req.params.id)) return res.status(403).send(`${req.user.name} does not have permission to update ${req.params.id}`);
 		await User.findByIdAndDelete({_id: req.params.id});
 		return res.status(200).send('deleted successfully');
