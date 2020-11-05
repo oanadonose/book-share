@@ -1,7 +1,9 @@
 import mongoose from 'mongoose';
 const Schema =  mongoose.Schema;
 
-//User Schema
+/**
+ * defines user schema for mongodb
+ */
 
 const userSchema = new Schema({
 	name:{
