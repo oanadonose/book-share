@@ -24,7 +24,7 @@
 					"type": "string"
 				}
 			},
-			"required": ["name","email","password"]
+			"required": ["email","password"]
 		}
 	},
 	"id": "/user",
@@ -49,5 +49,5 @@
 			"type": "string"
 		}
 	},
-	"required": ["name","email","password"]
+	"required": ["email","password"]
 }

@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import bodyparser from 'body-parser';
 import mongoose from 'mongoose';
 import passport from 'passport';
@@ -7,6 +8,8 @@ import userRouter from './routes/userRouter.js';
 import bookRouter from './routes/bookRouter.js';
 
 const app = express();
+
+app.use(cors());
 
 
 (async () => {

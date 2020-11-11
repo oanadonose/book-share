@@ -20,7 +20,17 @@ export const getBooks = async (req, res) => {
 	let books = [];
 	try {
 		books = await Book.find();
-		return res.status(200).send(books);
+		if(books) {
+			const data = books.map(item => {
+				const {id, title, author, photo, isbn, genre, user} = item;
+				const links = {
+					user: `http://${req.hostname}:${process.env.PORT}/api/users/${item.user}`,
+					book: `http://${req.hostname}:${process.env.PORT}${req.baseUrl}/${item.id}`
+				};
+				return {id,title,author,photo, isbn, genre, user, links};
+			});
+			return res.status(200).send(data);
+		}
 	} catch (err) {
 		return res.status(400).send(err);
 	}
@@ -34,9 +44,15 @@ export const getBooks = async (req, res) => {
  */
 export const getBookById = async (req, res) => {
 	try {
-		const book = await Book.findOne({'_id': mongoose.Types.ObjectId(req.params.id)});
+		const book = await Book.findOne({'_id': mongoose.Types.ObjectId(req.params.id)}).lean();
 		if(!book) return res.status(404).send('no book found');
-		else return res.status(200).send(book);
+		else {
+			const links = {
+				user: `http://${req.hostname}:${process.env.PORT}/api/users/${book.user}`,
+			};
+			book.links = links;
+			return res.status(200).send(book);
+		}
 	} catch (err) {
 		console.log('err', err);
 		return res.status(400).send(err);

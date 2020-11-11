@@ -47,10 +47,11 @@ export const register = async (req, res) => {
  * @param {express.Response} res
  */
 export const login = async (req, res) => {
-	const { errors, isValid } = validateAuthInput(req.body);
-	if(!isValid) {
-		return res.status(401).send(errors);
-	}
+	//const { errors, isValid } = validateAuthInput(req.body);
+	//if(!isValid) {
+	//	return res.status(401).send(errors);
+	//}
+	const errors = {};
 
 	const email = req.body.email;
 	const password = req.body.password;
