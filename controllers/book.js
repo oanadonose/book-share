@@ -8,6 +8,7 @@
  */
 import mongoose from 'mongoose';
 import Book from '../models/book.js';
+import {getUser} from '../helpers/users.js';
 import owns from '../helpers/rights.js';
 
 /**
@@ -19,15 +20,19 @@ import owns from '../helpers/rights.js';
 export const getBooks = async (req, res) => {
 	let books = [];
 	try {
-		books = await Book.find();
+		books = await Book.find().lean();
 		if(books) {
 			const data = books.map(item => {
-				const {id, title, author, photo, isbn, genre, user} = item;
 				const links = {
 					user: `http://${req.hostname}:${process.env.PORT}/api/users/${item.user}`,
-					book: `http://${req.hostname}:${process.env.PORT}${req.baseUrl}/${item.id}`
+					book: `http://${req.hostname}:${process.env.PORT}${req.baseUrl}/${item._id}`
 				};
-				return {id,title,author,photo, isbn, genre, user, links};
+				const updatedItem = {
+					...item,
+					links
+				};
+				console.log('updated',updatedItem);
+				return updatedItem;
 			});
 			return res.status(200).send(data);
 		}
