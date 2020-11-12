@@ -10,7 +10,7 @@ export const register = async (req, res) => {
 	}
 	try{
 		const user = await User.findOne({email: req.body.email});
-		if(!user) {			
+		if(!user) {
 			//encrypt
 			const hashedPassword = await bcrypt.hash(req.body.password, 10);
 			const newUser = new User({
@@ -22,13 +22,13 @@ export const register = async (req, res) => {
 			return res.status(200).send(newUser);
 		}
 		else {
-			errors.register = "Email already exists.";
+			errors.register = 'Email already exists.';
 			return res.status(400).send(errors);
 		}
 	} catch(err) {
 		return res.status(400).send(errors);
 	}
-}
+};
 
 export const login = async (req, res) => {
 	const { errors, isValid } = validateAuthInput(req.body);
@@ -40,7 +40,7 @@ export const login = async (req, res) => {
 	const password = req.body.password;
 
 	try {
-		const user = await User.findOne({email})
+		const user = await User.findOne({email});
 		if(!user) {
 			errors.email = 'User not found';
 			return res.status(400).send(errors);
@@ -48,12 +48,12 @@ export const login = async (req, res) => {
 		const match = await bcrypt.compare(password, user.password);
 		if(match) {
 			const payload = {id: user.id, name: user.name};
-			jsonwebtoken.sign(payload, process.env.secretOrKey, {expiresIn: 360}, (err, token) => {
+			jsonwebtoken.sign(payload, process.env.secretOrKey, {expiresIn: 36000}, (err, token) => {
 				res.json({
-					success: true, 
+					success: true,
 					message: 'Login success',
 					token: 'Bearer ' + token
-				})
+				});
 			});
 		}
 		else {
@@ -61,15 +61,16 @@ export const login = async (req, res) => {
 			return res.status(401).json(errors);
 		}
 	} catch (err) {
-		console.log('err', err)
+		console.log('err', err);
 		return res.status(400).send(err);
 	}
-}
+};
 
 export const logout = async (req, res) => {
 	if(req.user) {
 		try {
 			await req.logout();
+			req.user = null;
 		} catch(err) {
 			console.log('err in logout', err);
 		}
@@ -78,12 +79,14 @@ export const logout = async (req, res) => {
 	else {
 		return res.status(401).send('no users logged in');
 	}
-}
+};
 
-export const displayUser = (req, res) => {
-	res.json({
-		id: req.user.id,
-		name: req.user.name,
-		email: req.user.email
-	})
-}
+export const getUser = async (req, res) => {
+	try {
+		const user = await User.findOne({_id: req.params.id});
+		return res.status(200).send(user);
+	} catch (err) {
+		console.log('err in getUser', err);
+		return res.status(500).send(err);
+	}
+};

@@ -1,9 +1,8 @@
 import express from 'express';
 import passport from 'passport';
 
-//import User from '../models/User';
-
-import {register, login, logout, displayUser} from '../controllers/user.js'
+import {register, login, logout, getUser} from '../controllers/user.js';
+//import { getBooks, addBook, getBookById, removeBook } from '../controllers/book.js';
 
 const router = express.Router();
 
@@ -29,10 +28,10 @@ router.post('/login' , login);
 //@access Private
 router.post('/logout', passport.authenticate('jwt', { session: false }), logout);
 
-
+//TODO: change path to /user/:user/
 //@route GET api/user
 //@desc Display current user
 //@access Private
-router.get('/user', passport.authenticate('jwt', { session: false }), displayUser);
+router.get('/user/:id', passport.authenticate('jwt', { session: false }), getUser);
 
 export default router;

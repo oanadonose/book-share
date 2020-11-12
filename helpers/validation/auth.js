@@ -10,7 +10,7 @@ export const validateAuthInput = (data) => {
 	if(!validator.isEmail(data.email)) {
 		errors.email = 'Email input does not have a valid format.';
 	}
-	
+
 	if(validator.isEmpty(data.email)) {
 		errors.email = 'Email field is required.';
 	}
@@ -19,5 +19,5 @@ export const validateAuthInput = (data) => {
 		errors.password = 'Password field is required.';
 	}
 
-	return {errors, isValid: isEmpty(errors)}
-}
+	return {errors, isValid: isEmpty(errors)};
+};
