@@ -1,0 +1,46 @@
+{
+  "type": "module",
+  "name": "publiclibrary-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "linter": "eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.coventry.ac.uk/304CEM-2021SEPJAN/PublicLibrary-Backend"
+  },
+  "author": "Oana Donose",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "fs": "0.0.1-security",
+    "jsonschema": "^1.4.0",
+    "jsonwebtoken": "^8.5.1",
+    "koa-mount": "^4.0.0",
+    "koa-static": "^5.0.0",
+    "mongodb": "^3.6.2",
+    "mongoose": "^5.10.11",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
+    "path": "^0.12.7",
+    "redoc": "^2.0.0-rc.45",
+    "server-static": "^2.0.5",
+    "validator": "^13.1.17"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "eslint": "^7.12.1",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "jsdoc": "^3.6.6",
+    "nodemon": "^2.0.6"
+  }
+}

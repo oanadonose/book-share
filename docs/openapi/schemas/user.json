@@ -1,0 +1,53 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"definitions": {
+		"user": {
+			"$id": "#user",
+			"title": "User",
+			"description": "Data to register a new user.",
+			"type": "object",
+			"properties": {
+				"name": {
+					"description": "user name",
+					"type": "string"
+				},
+				"email": {
+					"description": "user email",
+					"type": "string"
+				},
+				"password": {
+					"description": "user password",
+					"type": "string"
+				},
+				"address": {
+					"description": "user address",
+					"type": "string"
+				}
+			},
+			"required": ["email","password"]
+		}
+	},
+	"id": "/user",
+	"title": "User",
+	"description": "A user",
+	"type": "object",
+	"properties": {
+		"name": {
+			"description": "User name",
+			"type": "string"
+		},
+		"email": {
+			"description": "User email",
+			"type": "string"
+		},
+		"password": {
+			"description": "User password",
+			"type": "string"
+		},
+		"address": {
+			"description": "User address",
+			"type": "string"
+		}
+	},
+	"required": ["email","password"]
+}
