@@ -7,6 +7,7 @@ import passportConfig from './helpers/passport.js';
 import userRouter from './routes/userRouter.js';
 import bookRouter from './routes/bookRouter.js';
 
+
 const app = express();
 
 app.use(cors());
@@ -21,13 +22,16 @@ app.use(cors());
 	console.log('db connected');
 })();
 
-app.use(bodyparser.urlencoded({ extended:false }));
+app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
 passportConfig(passport);
+
+
 
 app.get('/', (req, res) => res.send('hi'));
 app.use('/api/users', userRouter);
 app.use('/api/books', bookRouter);
+
 app.use(express.static('docs/openapi'));
 
 const port = process.env.PORT || 8080;

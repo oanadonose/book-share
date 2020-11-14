@@ -9,6 +9,9 @@
 import mongoose from 'mongoose';
 import Book from '../models/book.js';
 import {getUser} from '../helpers/users.js';
+import fs from 'fs';
+import path from 'path';
+
 import owns from '../helpers/rights.js';
 
 /**
@@ -21,25 +24,24 @@ export const getBooks = async (req, res) => {
 	let books = [];
 	try {
 		books = await Book.find().lean();
-		if(books) {
-			const data = books.map(item => {
-				const links = {
-					user: `http://${req.hostname}:${process.env.PORT}/api/users/${item.user}`,
-					book: `http://${req.hostname}:${process.env.PORT}${req.baseUrl}/${item._id}`
-				};
-				const updatedItem = {
-					...item,
-					links
-				};
-				console.log('updated',updatedItem);
-				return updatedItem;
-			});
-			return res.status(200).send(data);
-		}
+		//if(books) {
+		//	const data = books.map(item => {
+		//		const links = {
+		//			user: `http://${req.hostname}:${process.env.PORT}/api/users/${item.user}`,
+		//			book: `http://${req.hostname}:${process.env.PORT}${req.baseUrl}/${item._id}`
+		//		};
+		//		const updatedItem = {
+		//			...item,
+		//			links
+		//		};
+		//		return updatedItem;
+		//	});
+		return res.status(200).send(books);
 	} catch (err) {
 		return res.status(400).send(err);
 	}
 };
+
 
 /**
  * Function to return book record by id from mongodb
@@ -71,11 +73,30 @@ export const getBookById = async (req, res) => {
  * @param {express.Response} res
  */
 export const addBook = async (req, res) => {
+	//const readerStream = fs.createReadStream(req.files[0].path);
+	//console.log('readerStream', readerStream);
+	console.log('req.body', req.body);
+	console.log('req.headers', req.headers);
+	let fileName='placeholder';
+	let fileType='image/png';
+	if(req.file) {
+		console.log('req.file', req.file);
+		fileName = req.file.filename;
+		fileType = req.file.mimetype;
+		console.log('fileName', fileName);
+		console.log('fileType', fileType);
+	}
+	const __dirname = path.resolve();
+	console.log('__dirname', __dirname);
+
 	const newBook = new Book({
 		user: req.user.id,
 		title: req.body.title,
 		author: req.body.author,
-		photo: req.body.photo,
+		photo: {
+			data: fs.readFileSync(path.join(__dirname + '/uploads/' + fileName)),
+			contentType: fileType
+		},
 		ISBN: req.body.isbn || '111111',
 		genre: req.body.genre
 	});
@@ -84,7 +105,7 @@ export const addBook = async (req, res) => {
 		res.status(200).json(newBook);
 	} catch (err) {
 		console.log('err', err);
-		res.status(400).send(err);
+		res.status(400).json(err);
 	}
 };
 

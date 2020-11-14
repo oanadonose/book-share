@@ -6,7 +6,7 @@
 import express from 'express';
 import passport from 'passport';
 
-import {register, login, logout, getUser, updateUser, deleteUser } from '../controllers/user.js';
+import { register, login, logout, getUser, getUserBooks, updateUser, deleteUser } from '../controllers/user.js';
 import { validateUser } from '../helpers/validation/schema.js';
 
 /**
@@ -73,7 +73,20 @@ userRouter.post('/logout', passport.authenticate('jwt', { session: false }), log
  * @param {callback} getUser - express middleware function that returns a user object
  * @see /controllers/user#getUser for getUser handler
  */
-userRouter.get('/:id', passport.authenticate('jwt', { session: false }), getUser);
+userRouter.get('/:id', getUser);
+
+/**
+ * Route that returns user books
+ * @name GET/users/id/books
+ * @function
+ * @memberof module:routes/userRouter
+ * @inner
+ * @param {string} path
+ * @param {function} - passport authentication
+ * @param {callback} getUserBooks - express middleware function that returns a user object
+ * @see /controllers/user#getUserBooks for getUserBooks handler
+ */
+userRouter.get('/:id/books', getUserBooks);
 
 /**
  * Route to update user data
