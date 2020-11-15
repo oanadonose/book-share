@@ -147,7 +147,7 @@ export const getUserBooks = async (req, res) => {
  */
 export const updateUser = async (req, res) => {
 	const updates = {};
-	console.log('req.body', req.body);
+
 	if(req.body.name) {
 		updates.name = req.body.name;
 	}

@@ -8,7 +8,7 @@ const Schema =  mongoose.Schema;
 const bookSchema = new Schema({
 	user:{
 		type: Schema.Types.ObjectId,
-		ref: 'users'
+		ref: 'User'
 	},
 	title:{
 		type: String,
@@ -29,9 +29,14 @@ const bookSchema = new Schema({
 	genre: {
 		type: String,
 		required: false
+	},
+	requests: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Request'
 	}
+	]
 });
 
-const book = mongoose.model('Book', bookSchema);
+const Book = mongoose.model('Book', bookSchema);
 
-export default book;
+export default Book;

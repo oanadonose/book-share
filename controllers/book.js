@@ -8,7 +8,7 @@
  */
 import mongoose from 'mongoose';
 import Book from '../models/book.js';
-import {getUser} from '../helpers/users.js';
+import {getUser} from '../helpers/database.js';
 import fs from 'fs';
 import path from 'path';
 

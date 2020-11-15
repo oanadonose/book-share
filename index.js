@@ -6,6 +6,7 @@ import passport from 'passport';
 import passportConfig from './helpers/passport.js';
 import userRouter from './routes/userRouter.js';
 import bookRouter from './routes/bookRouter.js';
+import requestRouter from './routes/requestRouter.js';
 
 
 const app = express();
@@ -31,6 +32,7 @@ passportConfig(passport);
 app.get('/', (req, res) => res.send('hi'));
 app.use('/api/users', userRouter);
 app.use('/api/books', bookRouter);
+app.use('/api/requests', requestRouter);
 
 app.use(express.static('docs/openapi'));
 
