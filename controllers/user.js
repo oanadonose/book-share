@@ -28,7 +28,8 @@ export const register = async (req, res) => {
 			const newUser = new User({
 				name: req.body.name,
 				email: req.body.email,
-				password: hashedPassword
+				password: hashedPassword,
+				address: req.body.address
 			});
 			await newUser.save();
 			return res.status(200).send(newUser);
@@ -146,6 +147,7 @@ export const getUserBooks = async (req, res) => {
  */
 export const updateUser = async (req, res) => {
 	const updates = {};
+	console.log('req.body', req.body);
 	if(req.body.name) {
 		updates.name = req.body.name;
 	}
