@@ -23,8 +23,8 @@ const bookSchema = new Schema({
 		required: false
 	},
 	photo: {
-		type: String,
-		default: 'https://elyssarpress.com/wp-content/uploads/2019/12/book-cover-placeholder.png'
+		data: Buffer,
+		contentType: String
 	},
 	genre: {
 		type: String,

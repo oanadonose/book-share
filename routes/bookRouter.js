@@ -5,6 +5,7 @@
  */
 import express from 'express';
 import passport from 'passport';
+import multer from 'multer';
 
 import { getBooks, getBookById, addBook, removeBook, updateBook } from '../controllers/book.js';
 import { validateBook } from '../helpers/validation/schema.js';
@@ -44,7 +45,7 @@ bookRouter.get('/:id', getBookById);
 
 /**
  * Route that handles adding a new book
- * @name POST/books/id
+ * @name POST/books/add
  * @function
  * @memberof module:routes/bookRouter
  * @inner
@@ -54,7 +55,8 @@ bookRouter.get('/:id', getBookById);
  * @param {callback} addBook - express middleware function that returns a response object
  * @see /controllers/book#addBook for getBooks handler
  */
-bookRouter.post('/add', validateBook, passport.authenticate('jwt', { session: false }), addBook);
+const upload = multer({dest:'./uploads/'});
+bookRouter.post('/add',upload.single('photo'), validateBook, passport.authenticate('jwt', { session: false }), addBook);
 
 /**
  * Route that handles deleting a book

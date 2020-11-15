@@ -9,6 +9,9 @@
 import mongoose from 'mongoose';
 import Book from '../models/book.js';
 import {getUser} from '../helpers/users.js';
+import fs from 'fs';
+import path from 'path';
+
 import owns from '../helpers/rights.js';
 
 /**
@@ -21,25 +24,24 @@ export const getBooks = async (req, res) => {
 	let books = [];
 	try {
 		books = await Book.find().lean();
-		if(books) {
-			const data = books.map(item => {
-				const links = {
-					user: `http://${req.hostname}:${process.env.PORT}/api/users/${item.user}`,
-					book: `http://${req.hostname}:${process.env.PORT}${req.baseUrl}/${item._id}`
-				};
-				const updatedItem = {
-					...item,
-					links
-				};
-				console.log('updated',updatedItem);
-				return updatedItem;
-			});
-			return res.status(200).send(data);
-		}
+		//if(books) {
+		//	const data = books.map(item => {
+		//		const links = {
+		//			user: `http://${req.hostname}:${process.env.PORT}/api/users/${item.user}`,
+		//			book: `http://${req.hostname}:${process.env.PORT}${req.baseUrl}/${item._id}`
+		//		};
+		//		const updatedItem = {
+		//			...item,
+		//			links
+		//		};
+		//		return updatedItem;
+		//	});
+		return res.status(200).send(books);
 	} catch (err) {
 		return res.status(400).send(err);
 	}
 };
+
 
 /**
  * Function to return book record by id from mongodb
@@ -71,12 +73,31 @@ export const getBookById = async (req, res) => {
  * @param {express.Response} res
  */
 export const addBook = async (req, res) => {
+	//const readerStream = fs.createReadStream(req.files[0].path);
+	//console.log('readerStream', readerStream);
+	console.log('req.body', req.body);
+	console.log('req.headers', req.headers);
+	let fileName='placeholder';
+	let fileType='image/png';
+	if(req.file) {
+		console.log('req.file', req.file);
+		fileName = req.file.filename;
+		fileType = req.file.mimetype;
+		console.log('fileName', fileName);
+		console.log('fileType', fileType);
+	}
+	const __dirname = path.resolve();
+	console.log('__dirname', __dirname);
+
 	const newBook = new Book({
 		user: req.user.id,
 		title: req.body.title,
 		author: req.body.author,
-		photo: req.body.photo,
-		ISBN: req.body.isbn || '111111',
+		photo: {
+			data: fs.readFileSync(path.join(__dirname + '/uploads/' + fileName)),
+			contentType: fileType
+		},
+		ISBN: req.body.isbn || '',
 		genre: req.body.genre
 	});
 	try {
@@ -84,7 +105,7 @@ export const addBook = async (req, res) => {
 		res.status(200).json(newBook);
 	} catch (err) {
 		console.log('err', err);
-		res.status(400).send(err);
+		res.status(400).json(err);
 	}
 };
 
@@ -97,15 +118,15 @@ export const addBook = async (req, res) => {
 export const removeBook = async (req, res) => {
 	try {
 		const book = await Book.findOne({'_id': mongoose.Types.ObjectId(req.params.id)});
-		if(!book) return res.status(404).send('no book found');
+		if(!book) return res.status(404).send({success: false, message: 'no book found'});
 		if(!owns(req.user.id, book.user)) {
-			return res.status(403).send(`${req.user.id}//${req.user.name} does not own ${book.title}//${book.id}`)
+			return res.status(403).send({sucess: false, message: `${req.user.id}//${req.user.name} does not own ${book.title}//${book.id}`});
 		}
 		await Book.deleteOne({'_id': mongoose.Types.ObjectId(req.params.id)});
-		res.status(200).send('deleted successfully');
+		res.status(200).send({success: true});
 	} catch (err) {
 		console.log('err', err);
-		return res.status(400).send(err);
+		return res.status(400).send({message: err, success: false});
 	}
 };
 
@@ -131,17 +152,37 @@ export const updateBook = async (req, res) => {
 	if(req.body.genre) {
 		updates.genre = req.body.genre;
 	}
-	if(req.body.photo) {
-		updates.photo = req.body.photo;
+	if(req.file) {
+		updates.photo = {
+			data: '',
+			contentType: ''
+		};
+		console.log('req.body', req.body);
+		console.log('req.headers', req.headers);
+		let fileName='placeholder';
+		let fileType='image/png';
+		if(req.file) {
+			console.log('req.file', req.file);
+			fileName = req.file.filename;
+			fileType = req.file.mimetype;
+			console.log('fileName', fileName);
+			console.log('fileType', fileType);
+		}
+		const __dirname = path.resolve();
+		console.log('__dirname', __dirname);
+
+		updates.photo.data = fs.readFileSync(path.join(__dirname + '/uploads/' + fileName));
+		updates.photo.contentType = fileType;
 	}
+	console.log('updates', updates);
 
 	try {
 		const book = await Book.findOne({'_id': mongoose.Types.ObjectId(req.params.id)});
 		if(!owns(req.user.id, book.user)) {
-			return res.status(403).send(`${req.user.id}//${req.user.name} does not own ${book.title}//${book.id}`)
+			return res.status(403).send({sucess: false, message: `${req.user.id}//${req.user.name} does not own ${book.title}//${book.id}`});
 		}
 		await Book.findByIdAndUpdate({'_id': mongoose.Types.ObjectId(req.params.id)}, updates);
-		return res.status(200).send('updated successfully', updates);
+		return res.status(200).send(updates);
 	} catch (err) {
 		return res.status(400).send(err);
 	}

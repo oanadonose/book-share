@@ -10,6 +10,7 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import jsonwebtoken from 'jsonwebtoken';
 import User from '../models/user.js';
+import Book from '../models/book.js';
 import owns from '../helpers/rights.js';
 
 /**
@@ -27,7 +28,8 @@ export const register = async (req, res) => {
 			const newUser = new User({
 				name: req.body.name,
 				email: req.body.email,
-				password: hashedPassword
+				password: hashedPassword,
+				address: req.body.address
 			});
 			await newUser.save();
 			return res.status(200).send(newUser);
@@ -65,10 +67,11 @@ export const login = async (req, res) => {
 		const match = await bcrypt.compare(password, user.password);
 		if(match) {
 			const payload = {id: user.id, name: user.name};
-			jsonwebtoken.sign(payload, process.env.secretOrKey, {expiresIn: 36000}, (err, token) => {
+			jsonwebtoken.sign(payload, process.env.secretOrKey, (err, token) => {
 				res.json({
 					success: true,
-					token: 'Bearer ' + token
+					token: 'Bearer ' + token,
+					userid: user.id
 				});
 			});
 		}
@@ -119,6 +122,22 @@ export const getUser = async (req, res) => {
 		return res.status(500).send(err);
 	}
 };
+/**
+ * Function to fetch all of a user's books from mongodb
+ * @function
+ * @param {express.Request} req
+ * @param {express.Response} res
+ */
+export const getUserBooks = async (req, res) => {
+	let books = [];
+	console.log('req.params', req.params.id);
+	try {
+		books = await Book.find({ user: req.params.id }).lean();
+		return res.status(200).send(books);
+	} catch (err) {
+		return res.status(400).send(err);
+	}
+};
 
 /**
  * Function to update user record in mongodb
@@ -128,6 +147,7 @@ export const getUser = async (req, res) => {
  */
 export const updateUser = async (req, res) => {
 	const updates = {};
+	console.log('req.body', req.body);
 	if(req.body.name) {
 		updates.name = req.body.name;
 	}
