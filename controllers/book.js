@@ -51,7 +51,15 @@ export const getBooks = async (req, res) => {
  */
 export const getBookById = async (req, res) => {
 	try {
-		const book = await Book.findOne({'_id': mongoose.Types.ObjectId(req.params.id)}).lean();
+		const book = await Book
+			.findById(req.params.id)
+			.populate({
+				path: 'user',
+				options: { lean: true }
+			})
+			.lean()
+			.exec();
+		console.log(book.user);
 		if(!book) return res.status(404).send('no book found');
 		else {
 			const links = {
@@ -117,7 +125,7 @@ export const addBook = async (req, res) => {
  */
 export const removeBook = async (req, res) => {
 	try {
-		const book = await Book.findOne({'_id': mongoose.Types.ObjectId(req.params.id)});
+		const book = await Book.findById(req.params.id);
 		if(!book) return res.status(404).send({success: false, message: 'no book found'});
 		if(!owns(req.user.id, book.user)) {
 			return res.status(403).send({sucess: false, message: `${req.user.id}//${req.user.name} does not own ${book.title}//${book.id}`});

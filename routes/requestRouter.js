@@ -6,7 +6,7 @@
 import express from 'express';
 import passport from 'passport';
 
-import { addRequest } from '../controllers/request.js';
+import { addRequest, addMessage } from '../controllers/request.js';
 
 /**
  * Express router to mount request related routes on.
@@ -23,6 +23,8 @@ requestRouter.get('/', (req, res) => {
 });
 
 requestRouter.post('/add', passport.authenticate('jwt', { session: false }), addRequest);
+
+requestRouter.post('/reply', passport.authenticate('jwt', { session: false }), addMessage);
 
 
 export default requestRouter;

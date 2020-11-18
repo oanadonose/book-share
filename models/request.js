@@ -14,13 +14,18 @@ const requestSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'User'
 	},
-	message: {
-		type: String,
-		required: false
-	},
+	messages: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Message'
+	}
+	],
 	status: {
 		type: String,
 		required: true
+	},
+	archived: {
+		type: Boolean,
+		default: false
 	}
 });
 
