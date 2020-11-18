@@ -112,12 +112,12 @@ export const closeRequest = async (req, res) => {
  */
 export const getUserMadeRequests = async (req, res) => {
 	console.log('req.body', req.body);
-	console.log('req.params.userid', req.params.userid)
+	console.log('req.params.userid', req.params.userid);
 	console.log('req.user.id', req.user.id);
 	try {
 		const requests = await Request.find({userId: req.user.id})
 			.populate({
-				path: 'messages',
+				path: 'bookId, messages, userId',
 				options: { lean: true }
 			})
 			.lean().exec();
