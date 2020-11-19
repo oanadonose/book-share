@@ -34,7 +34,11 @@ const bookSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'Request'
 	}
-	]
+	],
+	status: {
+		type: String,
+		default: 'available'
+	}
 });
 
 const Book = mongoose.model('Book', bookSchema);

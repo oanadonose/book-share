@@ -54,10 +54,10 @@ export const getBookById = async (req, res) => {
 		const book = await Book
 			.findById(req.params.id)
 			.populate({
-				path: 'user, requests',
+				path: 'requests user',
 				populate: {
-					path: 'messages',
-					model: 'Message'
+					path: 'user',
+					model: 'User'
 				},
 				options: { lean: true }
 			})

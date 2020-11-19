@@ -6,11 +6,11 @@ const Schema =  mongoose.Schema;
  */
 
 const requestSchema = new Schema({
-	bookId: {
+	book: {
 		type: Schema.Types.ObjectId,
 		ref: 'Book'
 	},
-	userId: {
+	user: {
 		type: Schema.Types.ObjectId,
 		ref: 'User'
 	},

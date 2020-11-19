@@ -15,6 +15,32 @@ const options = {
 	lean: true,
 	omitUndefined: true
 };
+
+export const getRequest = async (req, res) => {
+	console.log('req.body', req.body);
+	console.log('req.headers', req.headers);
+	console.log('req.user.id', req.user.id);
+	const requestId = req.params.requestId;
+	const userId = req.user.id;
+	try {
+		const request = await Request.findById(requestId)
+			.populate({
+				path: 'book user messages',
+				populate: {
+					path: 'user',
+					model: 'User'
+				},
+				options: { lean: true }
+			})
+			.lean()
+			.exec();
+		console.log(request);
+		res.status(200).send(request);
+	} catch (err) {
+		console.log('err', err);
+		res.status(500).send(err);
+	}
+};
 /**
  * Function to add new request to mongodb
  * @function
@@ -25,26 +51,26 @@ export const addRequest = async (req, res) => {
 	console.log('req.body', req.body);
 	console.log('req.headers', req.headers);
 	console.log('req.user.id', req.user.id);
-	const bookId = req.body.bookId;
-	const userId = req.user.id;
+	const book = req.body.bookId;
+	const user = req.user.id;
 	let message;
 	try {
 		if(req.body.message) {
 			message = new Message({
-				userId,
+				user,
 				text: req.body.message
 			});
 			message.save();
 		}
 		//getbookinfo
 		const request = new Request({
-			bookId,
-			userId,
+			book,
+			user,
 			messages:[message],
 			status: 'open'
 		});
 		request.save();
-		const result = await Book.findByIdAndUpdate(bookId, { $push: {'requests': request} }, options);
+		const result = await Book.findByIdAndUpdate(book, { $push: {'requests': request} }, options);
 		res.status(200).send({request, result});
 	} catch(err) {
 		console.log('err', err);
@@ -65,7 +91,7 @@ export const addMessage = async (req, res) => {
 		if(req.body.message) {
 			const message = new Message({
 				text: req.body.message,
-				userId: req.user.id
+				user: req.user.id
 			});
 			message.save();
 			const result = await Request.findByIdAndUpdate(req.body.requestId, { $push: {'messages': message } }, options);
@@ -88,16 +114,16 @@ export const closeRequest = async (req, res) => {
 	console.log('req.user.id', req.user.id);
 	try {
 		const request = await Request.findById(req.body.requestId).populate({ //TODO: change path to book in moswl
-			path: 'bookId',
+			path: 'book',
 			options: { lean: true }
 		}).lean().exec();
 		console.log(request,'request');
-		if(request.bookId.user == req.user.id || req.user.id == request.userId) {
+		if(request.book.user == req.user.id || req.user.id == request.user) {
 			const result = await Request.findByIdAndUpdate(req.body.requestId, {'status': 'closed'}, {...options});
 			res.status(200).send(result);
 		} else {
 			res.status(403).send({message: 'no permission to close request',
-				'request.bookId.user':request.bookId.user, 'request.userId':request.userId, 'req.user.id':req.user.id });
+				'request.bookId.user':request.book.user, 'request.userId':request.user, 'req.user.id':req.user.id });
 		}
 	} catch(err) {
 		console.log('err', err);
@@ -115,9 +141,9 @@ export const getUserMadeRequests = async (req, res) => {
 	console.log('req.params.userid', req.params.userid);
 	console.log('req.user.id', req.user.id);
 	try {
-		const requests = await Request.find({userId: req.user.id})
+		const requests = await Request.find({user: req.user.id})
 			.populate({
-				path: 'bookId, messages, userId',
+				path: 'book',
 				options: { lean: true }
 			})
 			.lean().exec();
@@ -143,8 +169,8 @@ export const getUserReceivedRequests = async (req, res) => {
 			.populate({
 				path: 'requests',
 				populate: {
-					path: 'messages',
-					model: 'Message'
+					path: 'user',
+					model: 'User'
 				},
 				options: { lean: true }
 			})
