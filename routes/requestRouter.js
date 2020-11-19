@@ -6,7 +6,7 @@
 import express from 'express';
 import passport from 'passport';
 
-import { getRequest, addRequest, addMessage, closeRequest, getUserMadeRequests, getUserReceivedRequests } from '../controllers/request.js';
+import { getRequest, getBookRequests, addRequest, addMessage, closeRequest, archiveRequest, getUserMadeRequests, getUserReceivedRequests } from '../controllers/request.js';
 
 /**
  * Express router to mount request related routes on.
@@ -30,9 +30,13 @@ requestRouter.post('/reply', passport.authenticate('jwt', { session: false }), a
 
 requestRouter.post('/close', passport.authenticate('jwt', { session: false }), closeRequest);
 
+requestRouter.post('/:requestId/archive', passport.authenticate('jwt', { session: false }), archiveRequest);
+
 requestRouter.get('/:userid/made', passport.authenticate('jwt', { session: false }), getUserMadeRequests);
 
 requestRouter.get('/:userid/received', passport.authenticate('jwt', { session: false }), getUserReceivedRequests);
+
+requestRouter.get('/:bookid/book', passport.authenticate('jwt', { session: false }), getBookRequests);
 
 
 
