@@ -18,6 +18,11 @@ const options = {
 	lean: true,
 	omitUndefined: true,
 };
+
+const escapeRegex = (text) => {
+	return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+};
+
 /**
  * Function to fetch all books from mongodb
  * @function
@@ -27,19 +32,17 @@ const options = {
 export const getBooks = async (req, res) => {
 	let books = [];
 	try {
-		books = await Book.find().lean();
-		//if(books) {
-		//	const data = books.map(item => {
-		//		const links = {
-		//			user: `http://${req.hostname}:${process.env.PORT}/api/users/${item.user}`,
-		//			book: `http://${req.hostname}:${process.env.PORT}${req.baseUrl}/${item._id}`
-		//		};
-		//		const updatedItem = {
-		//			...item,
-		//			links
-		//		};
-		//		return updatedItem;
-		//	});
+		if(req.query.search) {
+			const searchQ = req.query.search;
+			const regex = new RegExp(escapeRegex(searchQ), 'gi');
+			console.log('searchQ', searchQ);
+			books = await Book.find()
+				.or([{ 'author': regex }, { 'title': regex }, { 'genre': regex }, { 'ISBN': regex }])
+				.lean();
+		}
+		else {
+			books = await Book.find().lean();
+		}
 		return res.status(200).send(books);
 	} catch (err) {
 		return res.status(400).send(err);
