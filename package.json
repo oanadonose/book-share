@@ -7,7 +7,9 @@
   "scripts": {
     "start": "nodemon index.js",
     "linter": "eslint .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cross-env MONGOURL=$testdbURL NODE_ENV=test jest __tests__ --runInBand --detectOpenHandles —testTimeout=10000",
+    "migrate:reset": "cross-env NODE_ENV=test MONGOURL=$testdbURL node ./helpers/migrate.js",
+    "pretest": "npm run migrate:reset"
   },
   "repository": {
     "type": "git",
@@ -37,11 +39,17 @@
     "validator": "^13.1.17"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.12.7",
+    "@shelf/jest-mongodb": "^1.2.3",
+    "cross-env": "^7.0.2",
     "dotenv": "^8.2.0",
     "eslint": "^7.12.1",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.1",
+    "jest": "^26.6.3",
     "jsdoc": "^3.6.6",
-    "nodemon": "^2.0.6"
+    "nodemon": "^2.0.6",
+    "superagent": "^6.1.0",
+    "supertest": "^6.0.1"
   }
 }
