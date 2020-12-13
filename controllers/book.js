@@ -49,7 +49,8 @@ export const getBooks = async (req, res) => {
  */
 export const getBookById = async (req, res) => {
 	try {
-		const book = await Book.findOne({'_id': mongoose.Types.ObjectId(req.params.id)}).lean();
+		const book = await Book.findOne({'_id': mongoose.Types.ObjectId(req.params.id)})
+			.populate('user','_id name').lean();
 		if(!book) return res.status(404).send('no book found');
 		else {
 			const links = {
