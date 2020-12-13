@@ -6,7 +6,7 @@
 import express from 'express';
 import passport from 'passport';
 
-import { register, login, logout, getUser, getUserBooks, updateUser, deleteUser } from '../controllers/user.js';
+import { register, login, logout, getUser, getUsers, getUserBooks, updateUser, deleteUser } from '../controllers/user.js';
 import { validateUser } from '../helpers/validation/schema.js';
 
 import {can} from '../helpers/rights.js';
@@ -21,15 +21,16 @@ const userRouter = express.Router();
 
 /**
  * Route that returns user data for admin related tasks
+ * @name GET/users/
  * @function
  * @memberof module:routes/userRouter
  * @inner
  * @param {string} path
  * @param {function} can -middleware access controller
- * @param {function} - passport authentication
+ * @param {function} -passport authentication
  * @param {callback} getUsers
  */
-userRouter.get('/', can({resource: 'user', action: 'updateAny'}), passport.authenticate('jwt', { session: false }), );
+userRouter.get('/', can({resource: 'user', action: 'updateAny'}), passport.authenticate('jwt', { session: false }), getUsers);
 
 
 /**
