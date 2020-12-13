@@ -11,7 +11,7 @@ import bcrypt from 'bcryptjs';
 import jsonwebtoken from 'jsonwebtoken';
 import User from '../models/user.js';
 import Book from '../models/book.js';
-import owns from '../helpers/rights.js';
+import {owns, can} from '../helpers/rights.js';
 
 /**
  * Function to register new details in mongodb
@@ -20,16 +20,21 @@ import owns from '../helpers/rights.js';
  * @param {express.Response} res
  */
 export const register = async (req, res) => {
+	let role = 'user';
 	try{
 		const user = await User.findOne({email: req.body.email});
 		if(!user) {
 			//encrypt
 			const hashedPassword = await bcrypt.hash(req.body.password, 10);
+			if(req.body.role) {
+				role = req.body.role;
+			}
 			const newUser = new User({
 				name: req.body.name,
 				email: req.body.email,
 				password: hashedPassword,
-				address: req.body.address
+				address: req.body.address,
+				role: role
 			});
 			await newUser.save();
 			return res.status(200).send(newUser);
@@ -99,7 +104,7 @@ export const logout = async (req, res) => {
 		} catch(err) {
 			console.log('err in logout', err);
 		}
-		return res.status(200);
+		return res.status(200).send('logout success');
 	}
 	else {
 		return res.status(401).send('no users logged in');
@@ -114,7 +119,7 @@ export const logout = async (req, res) => {
  */
 export const getUser = async (req, res) => {
 	try {
-		const user = await User.findById(req.params.id);
+		const user = await User.findOne({'_id': mongoose.Types.ObjectId(req.params.id)}).lean();
 		if(!user) return res.status(404).send('User not found');
 		return res.status(200).send(user);
 	} catch (err) {
@@ -122,6 +127,23 @@ export const getUser = async (req, res) => {
 		return res.status(500).send(err);
 	}
 };
+
+/**
+ * Function to return users records from mongodb
+ * @function
+ * @param {express.Request} req
+ * @param {express.Response} res
+ */
+export const getUsers = async (req, res) => {
+	try {
+		const users = await User.find().lean();
+		return res.status(200).send(users);
+	} catch (err) {
+		console.log('err in getUsers', err);
+		return res.status(500).send(err.message);
+	}
+};
+
 /**
  * Function to fetch all of a user's books from mongodb
  * @function
@@ -147,7 +169,7 @@ export const getUserBooks = async (req, res) => {
  */
 export const updateUser = async (req, res) => {
 	const updates = {};
-
+	console.log('req.body', req.body);
 	if(req.body.name) {
 		updates.name = req.body.name;
 	}
@@ -160,12 +182,21 @@ export const updateUser = async (req, res) => {
 	if(req.body.address) {
 		updates.address = req.body.address;
 	}
+	if(req.body.role) {
+		updates.role = req.body.role;
+	}
 	try {
-		const oldUser = await User.findById(req.params.id);
+		const oldUser = await User.findOne({'_id': mongoose.Types.ObjectId(req.params.id)}).lean();
 		if(!oldUser) return res.status(404).send('User not found');
-		if(!owns(req.user.id, req.params.id)) return res.status(403).send(`${req.user.name} does not have permission to update ${req.params.id}`);
-		const newUser = await User.findByIdAndUpdate({'_id': mongoose.Types.ObjectId(req.params.id)}, updates, { new: true });
-		return res.status(200).send(newUser);
+
+		//permission check - either user is trying to edit own record or user is admin
+		if(owns(req.user.id, req.params.id) || can({action: 'updateAny', resource: 'user'})) {
+			const newUser = await User.findByIdAndUpdate({'_id': mongoose.Types.ObjectId(req.params.id)}, updates, { new: true });
+			return res.status(200).send(newUser);
+		}
+		else {
+			return res.status(403).send(`${req.user.name} does not have permission to update ${req.params.id}`);
+		}
 	} catch (err) {
 		console.log('err in updateUser', err);
 		return res.status(400).send(err);
@@ -180,7 +211,7 @@ export const updateUser = async (req, res) => {
  */
 export const deleteUser = async (req, res) => {
 	try {
-		const user = await User.findOne({'_id': mongoose.Types.ObjectId(req.params.id)});
+		const user = await User.findOne({'_id': mongoose.Types.ObjectId(req.params.id)}).lean();
 		if(!user) return res.status(404).send('User not found');
 		if(!owns(req.user.id, req.params.id)) return res.status(403).send(`${req.user.name} does not have permission to update ${req.params.id}`);
 		await User.findByIdAndDelete({'_id': mongoose.Types.ObjectId(req.params.id)});
