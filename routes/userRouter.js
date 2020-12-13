@@ -17,7 +17,7 @@ import { validateUser } from '../helpers/validation/schema.js';
 const userRouter = express.Router();
 
 userRouter.get('/', (req, res) => {
-	res.json({
+	res.status(201).json({
 		status: 'workin',
 		message: 'hi'
 	});

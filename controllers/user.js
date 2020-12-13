@@ -99,7 +99,7 @@ export const logout = async (req, res) => {
 		} catch(err) {
 			console.log('err in logout', err);
 		}
-		return res.status(200).send('logout success');
+		return res.status(200);
 	}
 	else {
 		return res.status(401).send('no users logged in');
@@ -114,7 +114,7 @@ export const logout = async (req, res) => {
  */
 export const getUser = async (req, res) => {
 	try {
-		const user = await User.findOne({'_id': mongoose.Types.ObjectId(req.params.id)});
+		const user = await User.findById(req.params.id);
 		if(!user) return res.status(404).send('User not found');
 		return res.status(200).send(user);
 	} catch (err) {
@@ -161,7 +161,7 @@ export const updateUser = async (req, res) => {
 		updates.address = req.body.address;
 	}
 	try {
-		const oldUser = await User.findOne({'_id': mongoose.Types.ObjectId(req.params.id)});
+		const oldUser = await User.findById(req.params.id);
 		if(!oldUser) return res.status(404).send('User not found');
 		if(!owns(req.user.id, req.params.id)) return res.status(403).send(`${req.user.name} does not have permission to update ${req.params.id}`);
 		const newUser = await User.findByIdAndUpdate({'_id': mongoose.Types.ObjectId(req.params.id)}, updates, { new: true });
