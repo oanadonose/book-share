@@ -8,12 +8,10 @@
  */
 import mongoose from 'mongoose';
 import Book from '../models/book.js';
-import {getUser} from '../helpers/users.js';
 import fs from 'fs';
 import path from 'path';
 
-import owns from '../helpers/rights.js';
-
+import {owns} from '../helpers/rights.js';
 /**
  * Function to fetch all books from mongodb
  * @function

@@ -47,6 +47,10 @@
 		"address": {
 			"description": "User address",
 			"type": "string"
+		},
+		"role": {
+			"description": "User role",
+			"type": "string"
 		}
 	},
 	"required": ["email","password"]

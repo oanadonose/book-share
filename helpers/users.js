@@ -10,3 +10,13 @@ export const getUser = async(userId) => {
 	}
 	//add owned books to returned user
 };
+
+export const getUserRole = async(userId) => {
+	try {
+		const user = await User.findOne({'_id': mongoose.Types.ObjectId(userId)})
+			.select('role -_id').lean();
+		return user;
+	} catch(err) {
+		return err;
+	}
+};

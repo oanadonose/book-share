@@ -11,7 +11,7 @@ import bcrypt from 'bcryptjs';
 import jsonwebtoken from 'jsonwebtoken';
 import User from '../models/user.js';
 import Book from '../models/book.js';
-import owns from '../helpers/rights.js';
+import {owns} from '../helpers/rights.js';
 
 /**
  * Function to register new details in mongodb
