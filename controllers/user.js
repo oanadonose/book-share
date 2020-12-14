@@ -98,13 +98,8 @@ export const login = async (req, res) => {
  */
 export const logout = async (req, res) => {
 	if(req.user) {
-		try {
-			await req.logout();
-			req.user = null;
-		} catch(err) {
-			console.log('err in logout', err);
-		}
-		return res.status(200).send('logout success');
+		req.logout();
+		return res.status(200).send('ok');
 	}
 	else {
 		return res.status(401).send('no users logged in');
