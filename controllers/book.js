@@ -11,13 +11,7 @@ import Book from '../models/book.js';
 import fs from 'fs';
 import path from 'path';
 
-import owns from '../helpers/rights.js';
-//options for findbyidandupdate query
-const options = {
-	new: true,
-	lean: true,
-	omitUndefined: true,
-};
+import {owns} from '../helpers/rights.js';
 
 const escapeRegex = (text) => {
 	return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
@@ -32,7 +26,7 @@ const escapeRegex = (text) => {
 export const getBooks = async (req, res) => {
 	let books = [];
 	try {
-		if(req.query.search) {
+		if(req.query && req.query.search) {
 			const searchQ = req.query.search;
 			const regex = new RegExp(escapeRegex(searchQ), 'gi');
 			console.log('searchQ', searchQ);
@@ -43,6 +37,7 @@ export const getBooks = async (req, res) => {
 		else {
 			books = await Book.find().lean();
 		}
+
 		return res.status(200).send(books);
 	} catch (err) {
 		return res.status(400).send(err);
@@ -58,19 +53,8 @@ export const getBooks = async (req, res) => {
  */
 export const getBookById = async (req, res) => {
 	try {
-		const book = await Book
-			.findById(req.params.id)
-			.populate({
-				path: 'requests user',
-				populate: {
-					path: 'user',
-					model: 'User'
-				},
-				options: { lean: true }
-			})
-			.lean()
-			.exec();
-		console.log(book.user);
+		const book = await Book.findOne({'_id': mongoose.Types.ObjectId(req.params.id)})
+			.populate('user','_id name').lean();
 		if(!book) return res.status(404).send('no book found');
 		else {
 			const links = {
@@ -136,7 +120,7 @@ export const addBook = async (req, res) => {
  */
 export const removeBook = async (req, res) => {
 	try {
-		const book = await Book.findById(req.params.id);
+		const book = await Book.findOne({'_id': mongoose.Types.ObjectId(req.params.id)});
 		if(!book) return res.status(404).send({success: false, message: 'no book found'});
 		if(!owns(req.user.id, book.user)) {
 			return res.status(403).send({sucess: false, message: `${req.user.id}//${req.user.name} does not own ${book.title}//${book.id}`});
@@ -171,9 +155,6 @@ export const updateBook = async (req, res) => {
 	if(req.body.genre) {
 		updates.genre = req.body.genre;
 	}
-	if(req.body.status) {
-		updates.status = req.body.status;
-	}
 	if(req.file) {
 		updates.photo = {
 			data: '',
@@ -199,12 +180,12 @@ export const updateBook = async (req, res) => {
 	console.log('updates', updates);
 
 	try {
-		const book = await Book.findById(req.params.id);
+		const book = await Book.findOne({'_id': mongoose.Types.ObjectId(req.params.id)});
 		if(!owns(req.user.id, book.user)) {
 			return res.status(403).send({sucess: false, message: `${req.user.id}//${req.user.name} does not own ${book.title}//${book.id}`});
 		}
-		const result = await Book.findByIdAndUpdate(req.params.id, updates, options);
-		return res.status(200).send(result);
+		await Book.findByIdAndUpdate({'_id': mongoose.Types.ObjectId(req.params.id)}, updates);
+		return res.status(200).send(updates);
 	} catch (err) {
 		return res.status(400).send(err);
 	}
