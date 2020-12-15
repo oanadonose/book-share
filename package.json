@@ -7,7 +7,7 @@
   "scripts": {
     "start": "env-cmd -f ./config/dev.env nodemon index.js",
     "linter": "eslint .",
-    "test": "env-cmd -f ./config/test.env jest __tests__ --runInBand --detectOpenHandles —testTimeout=10000",
+    "test": "env-cmd -f ./config/test.env jest __tests__ --forceExit --detectOpenHandles --maxWorkers=1",
     "migrate:reset": "env-cmd -f ./config/test.env node ./helpers/migrate.js",
     "pretest": "npm run migrate:reset"
   },
