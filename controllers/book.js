@@ -160,20 +160,13 @@ export const updateBook = async (req, res) => {
 			data: '',
 			contentType: ''
 		};
-		console.log('req.body', req.body);
-		console.log('req.headers', req.headers);
 		let fileName='placeholder';
 		let fileType='image/png';
 		if(req.file) {
-			console.log('req.file', req.file);
 			fileName = req.file.filename;
 			fileType = req.file.mimetype;
-			console.log('fileName', fileName);
-			console.log('fileType', fileType);
 		}
 		const __dirname = path.resolve();
-		console.log('__dirname', __dirname);
-
 		updates.photo.data = fs.readFileSync(path.join(__dirname + '/uploads/' + fileName));
 		updates.photo.contentType = fileType;
 	}

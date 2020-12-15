@@ -32,7 +32,7 @@ const bookRouter = express.Router();
  * @param {callback} getBooks - express middleware function that returns a user object
  * @see /controllers/book#getBooks for getBooks handler
  */
-bookRouter.get('/', can({resource: 'book', action: 'readAny'}), getBooks);
+bookRouter.get('/', getBooks);
 
 /**
  * Route that returns a book by id
@@ -45,7 +45,7 @@ bookRouter.get('/', can({resource: 'book', action: 'readAny'}), getBooks);
  * @param {callback} getBookById - express middleware function that returns a user object
  * @see /controllers/book#getBookById for getBooks handler
  */
-bookRouter.get('/:id', can({resource: 'book', action: 'readAny'}), getBookById);
+bookRouter.get('/:id', getBookById);
 
 /**
  * Route that handles adding a new book
@@ -61,7 +61,7 @@ bookRouter.get('/:id', can({resource: 'book', action: 'readAny'}), getBookById);
  * @see /controllers/book#addBook for getBooks handler
  */
 const upload = multer({dest:'./uploads/'});
-bookRouter.post('/add',upload.single('photo'), can({resource: 'book', action: 'createOwn'}), validateBook, passport.authenticate('jwt', { session: false }), addBook);
+bookRouter.post('/add',upload.single('photo'), validateBook, passport.authenticate('jwt', { session: false }), can({resource: 'book', action: 'createOwn'}), addBook);
 
 /**
  * Route that handles deleting a book
@@ -75,7 +75,7 @@ bookRouter.post('/add',upload.single('photo'), can({resource: 'book', action: 'c
  * @param {callback} removeBook - express middleware function that returns a response object
  * @see /controllers/book#removeBook for getBooks handler
  */
-bookRouter.delete('/:id', can({resource: 'book', action: 'updateOwn'}), passport.authenticate('jwt', { session: false }), removeBook);
+bookRouter.delete('/:id', passport.authenticate('jwt', { session: false }), can({resource: 'book', action: 'deleteOwn'}), removeBook);
 
 /**
  * Route that handles updating a book
@@ -90,6 +90,6 @@ bookRouter.delete('/:id', can({resource: 'book', action: 'updateOwn'}), passport
  * @param {callback} updateBook - express middleware function that returns a response object
  * @see /controllers/book#updateBook for updateBook handler
  */
-bookRouter.put('/:id', validateBook, can({resource: 'book', action: 'updateOwn'}), passport.authenticate('jwt', { session: false }), updateBook);
+bookRouter.put('/:id', passport.authenticate('jwt', { session: false }), can({resource: 'book', action: 'updateOwn'}), updateBook);
 
 export default bookRouter;

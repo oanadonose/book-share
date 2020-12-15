@@ -4,6 +4,8 @@ const ac = new AccessControl();
 
 const roles = () => {
 	ac.grant('user')
+		.updateOwn('user')
+		.deleteOwn('user')
 		.readAny('book')
 		.readAny('user')
 		.createOwn('book')
