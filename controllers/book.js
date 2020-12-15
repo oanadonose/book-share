@@ -76,21 +76,13 @@ export const getBookById = async (req, res) => {
  * @param {express.Response} res
  */
 export const addBook = async (req, res) => {
-	//const readerStream = fs.createReadStream(req.files[0].path);
-	//console.log('readerStream', readerStream);
-	console.log('req.body', req.body);
-	console.log('req.headers', req.headers);
 	let fileName='placeholder';
 	let fileType='image/png';
 	if(req.file) {
-		console.log('req.file', req.file);
 		fileName = req.file.filename;
 		fileType = req.file.mimetype;
-		console.log('fileName', fileName);
-		console.log('fileType', fileType);
 	}
 	const __dirname = path.resolve();
-	console.log('__dirname', __dirname);
 
 	const newBook = new Book({
 		user: req.user.id,
@@ -170,7 +162,6 @@ export const updateBook = async (req, res) => {
 		updates.photo.data = fs.readFileSync(path.join(__dirname + '/uploads/' + fileName));
 		updates.photo.contentType = fileType;
 	}
-	console.log('updates', updates);
 
 	try {
 		const book = await Book.findOne({'_id': mongoose.Types.ObjectId(req.params.id)});
