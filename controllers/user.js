@@ -147,7 +147,6 @@ export const getUsers = async (req, res) => {
  */
 export const getUserBooks = async (req, res) => {
 	let books = [];
-	console.log('req.params', req.params.id);
 	try {
 		books = await Book.find({ user: req.params.id }).lean();
 		return res.status(200).send(books);
@@ -164,7 +163,6 @@ export const getUserBooks = async (req, res) => {
  */
 export const updateUser = async (req, res) => {
 	const updates = {};
-	console.log('req.body', req.body);
 	if(req.body.name) {
 		updates.name = req.body.name;
 	}
