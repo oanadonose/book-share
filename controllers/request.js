@@ -18,11 +18,7 @@ const options = {
 };
 
 export const getRequest = async (req, res) => {
-	console.log('req.body', req.body);
-	console.log('req.headers', req.headers);
-	console.log('req.user.id', req.user.id);
 	const requestId = req.params.requestId;
-	const userId = req.user.id;
 	try {
 		const request = await Request.findById(requestId)
 			.populate({
@@ -35,7 +31,6 @@ export const getRequest = async (req, res) => {
 			})
 			.lean()
 			.exec();
-		console.log(request);
 		res.status(200).send(request);
 	} catch (err) {
 		console.log('err', err);
@@ -49,8 +44,6 @@ export const getRequest = async (req, res) => {
  * @param {express.Response} res
  */
 export const addRequest = async (req, res) => {
-	console.log('req.body.bookId', req.body.bookId);
-	console.log('req.body', req.body);
 	const book = req.body.bookId;
 	const user = req.user.id;
 	let message;
@@ -84,9 +77,6 @@ export const addRequest = async (req, res) => {
  * @param {express.Response} res
  */
 export const addMessage = async (req, res) => {
-	console.log('req.body', req.body);
-	console.log('req.headers', req.headers);
-	console.log('req.user.id', req.user.id);
 	try {
 		if(req.body.message) {
 			const message = new Message({
@@ -117,14 +107,11 @@ export const addMessage = async (req, res) => {
  * @param {express.Response} res
  */
 export const closeRequest = async (req, res) => {
-	console.log('req.body', req.body);
-	console.log('req.user.id', req.user.id);
 	try {
 		const request = await Request.findById(req.body.requestId).populate({
 			path: 'book',
 			options: { lean: true }
 		}).lean().exec();
-		console.log(request,'request');
 		if(request.book.user == req.user.id || req.user.id == request.user) {
 			const result = await Request.findByIdAndUpdate(req.body.requestId, {'status': 'closed'}, {...options});
 			const bookUpdate = await Book.findByIdAndUpdate(request.book._id, { 'status': 'available' }, {...options});
@@ -145,9 +132,6 @@ export const closeRequest = async (req, res) => {
  * @param {express.Response} res
  */
 export const getUserMadeRequests = async (req, res) => {
-	console.log('req.body', req.body);
-	console.log('req.params.userid', req.params.userid);
-	console.log('req.user.id', req.user.id);
 	try {
 		const requests = await Request.find({user: req.user.id})
 			.populate({
@@ -155,7 +139,6 @@ export const getUserMadeRequests = async (req, res) => {
 				options: { lean: true }
 			})
 			.lean().exec();
-		console.log(requests);
 		res.status(200).send(requests);
 	} catch (err) {
 		console.log(err);
@@ -170,7 +153,6 @@ export const getUserMadeRequests = async (req, res) => {
  * @param {express.Response} res
  */
 export const getUserReceivedRequests = async (req, res) => {
-	console.log('req.params.userid', req.params.userid);
 	const requests = [];
 	try {
 		const books = await Book.find({user: req.params.userid})
@@ -221,10 +203,9 @@ export const archiveRequest = async (req, res) => {
 
 export const getBookRequests = async (req, res) => {
 	const bookId = req.params.bookid;
-	console.log('bookId', bookId);
 	try {
-		const requests = await Request.find({'book': mongoose.Types.ObjectId(bookId)}).lean();
-		console.log('requests', requests);
+		const requests = await Request.find({'book': mongoose.Types.ObjectId(bookId)})
+			.populate('user', '_id name').lean();
 		res.status(200).send(requests);
 	} catch (err) {
 		console.log('err', err);
