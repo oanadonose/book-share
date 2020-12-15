@@ -30,7 +30,7 @@ const userRouter = express.Router();
  * @param {function} -passport authentication
  * @param {callback} getUsers
  */
-userRouter.get('/', can({resource: 'user', action: 'updateAny'}), passport.authenticate('jwt', { session: false }), getUsers);
+userRouter.get('/', passport.authenticate('jwt', { session: false }), can({resource: 'user', action: 'updateAny'}), getUsers);
 
 
 /**
@@ -84,7 +84,7 @@ userRouter.post('/logout', passport.authenticate('jwt', { session: false }), log
  * @param {callback} getUser - express middleware function that returns a user object
  * @see /controllers/user#getUser for getUser handler
  */
-userRouter.get('/:id',can({resource: 'user', action: 'readAny'}), getUser);
+userRouter.get('/:id',passport.authenticate('jwt', { session: false }), can({resource: 'user', action: 'readAny'}), getUser);
 
 /**
  * Route that returns user books
@@ -98,7 +98,7 @@ userRouter.get('/:id',can({resource: 'user', action: 'readAny'}), getUser);
  * @param {callback} getUserBooks - express middleware function that returns a user object
  * @see /controllers/user#getUserBooks for getUserBooks handler
  */
-userRouter.get('/:id/books',can({resource: 'book', action: 'readAny'}), getUserBooks);
+userRouter.get('/:id/books',passport.authenticate('jwt', { session: false }), can({resource: 'book', action: 'readAny'}), getUserBooks);
 
 /**
  * Route to update user data
@@ -112,7 +112,7 @@ userRouter.get('/:id/books',can({resource: 'book', action: 'readAny'}), getUserB
  * @param {callback} updateUser - express middleware function that handles the update
  * @see /controllers/user#updateUser for updateUser handler
  */
-userRouter.put('/:id', can({resource: 'user', action: 'updateOwn'}), passport.authenticate('jwt', { session: false }), updateUser);
+userRouter.put('/:id', passport.authenticate('jwt', { session: false }), can({resource: 'user', action: 'updateOwn'}), updateUser);
 
 /**
  * Route to delete user record
@@ -126,6 +126,6 @@ userRouter.put('/:id', can({resource: 'user', action: 'updateOwn'}), passport.au
  * @param {callback} deleteUser - express middleware function that handles the update
  * @see /controllers/user#deleteUser for deleteUser handler
  */
-userRouter.delete('/:id', can({resource: 'user', action: 'updateOwn'}), passport.authenticate('jwt', { session: false }), deleteUser);
+userRouter.delete('/:id', passport.authenticate('jwt', { session: false }), can({resource: 'user', action: 'updateOwn'}), deleteUser);
 
 export default userRouter;

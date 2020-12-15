@@ -18,11 +18,7 @@ const options = {
 };
 
 export const getRequest = async (req, res) => {
-	console.log('req.body', req.body);
-	console.log('req.headers', req.headers);
-	console.log('req.user.id', req.user.id);
 	const requestId = req.params.requestId;
-	const userId = req.user.id;
 	try {
 		const request = await Request.findById(requestId)
 			.populate({
@@ -221,9 +217,11 @@ export const archiveRequest = async (req, res) => {
 
 export const getBookRequests = async (req, res) => {
 	const bookId = req.params.bookid;
+	console.log('here');
 	console.log('bookId', bookId);
 	try {
-		const requests = await Request.find({'book': mongoose.Types.ObjectId(bookId)}).lean();
+		const requests = await Request.find({'book': mongoose.Types.ObjectId(bookId)})
+			.populate('user', '_id name').lean();
 		console.log('requests', requests);
 		res.status(200).send(requests);
 	} catch (err) {

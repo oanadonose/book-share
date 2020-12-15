@@ -36,8 +36,6 @@ requestRouter.get('/:userid/made', passport.authenticate('jwt', { session: false
 
 requestRouter.get('/:userid/received', passport.authenticate('jwt', { session: false }), getUserReceivedRequests);
 
-requestRouter.get('/:bookid/book', passport.authenticate('jwt', { session: false }), getBookRequests);
-
-
+requestRouter.get('/:bookid/book', getBookRequests);
 
 export default requestRouter;
