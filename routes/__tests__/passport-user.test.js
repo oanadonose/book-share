@@ -4,16 +4,10 @@ let server, agent;
 
 describe('Passport User Routes', () => {
 
-	let adminToken, userToken, adminId, userId, adminBookId, userBookId;
+	let userToken, userId;
 	let userBook = {};
 	const updates = {
 		name: 'updated'
-	};
-	const adminUser = {
-		name: 'unique_33',
-		password: 'password',
-		email: 'unique_email3@example.com',
-		role: 'admin'
 	};
 	const newUser = {
 		name: 'unique_44',
@@ -38,23 +32,11 @@ describe('Passport User Routes', () => {
 			agent = request.agent(server); // since the application is already listening, it should use the allocated port
 			done();
 		});
-		//const res = await agent
-		//	.post('/api/users/register')
-		//	.send(newUser);
-		//console.log('res.status', res.status);
 	});
 
 	afterAll((done) => {
 		return  server && server.close(done);
 	});
-
-	//beforeEach(async (done) => {
-	//	const res = await agent
-	//		.post('/api/users/login')
-	//		.send(newUser);
-	//	console.log('res',res.status);
-	//	done();
-	//});
 
 	it('should send 401', async () => {
 		await agent
@@ -124,7 +106,7 @@ describe('Passport User Routes', () => {
 			.send(updates)
 			.expect(401);
 	});
-	
+
 	it('should return 401 to add new book', async () => {
 		await agent
 			.post('/api/books/add')

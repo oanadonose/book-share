@@ -3,7 +3,7 @@ import app from '../../app.js';
 let server, agent;
 
 describe('Passport Admin Routes', () => {
-	let adminToken, userToken, adminId, userId, userBookId;
+	let adminToken, adminId;
 	let randUser = {};
 	let randUser2= {};
 	let adminBook = {};
