@@ -1,0 +1,5 @@
+/node_modules
+package-lock.json
+nodemon.json
+save-dev.md
+uploads/*
