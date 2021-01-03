@@ -5,10 +5,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "env-cmd -f ./config/dev.env nodemon index.js",
     "linter": "eslint .",
-    "test": "cross-env MONGOURL=$testdbURL NODE_ENV=test jest __tests__ --runInBand --detectOpenHandles —testTimeout=10000",
-    "migrate:reset": "cross-env NODE_ENV=test MONGOURL=$testdbURL node ./helpers/migrate.js",
+    "test": "env-cmd -f ./config/test.env jest __tests__ --forceExit --detectOpenHandles --maxWorkers=1",
+    "migrate:reset": "env-cmd -f ./config/test.env node ./helpers/migrate.js",
     "pretest": "npm run migrate:reset"
   },
   "repository": {
@@ -27,8 +27,6 @@
     "fs": "0.0.1-security",
     "jsonschema": "^1.4.0",
     "jsonwebtoken": "^8.5.1",
-    "koa-mount": "^4.0.0",
-    "koa-static": "^5.0.0",
     "mongodb": "^3.6.2",
     "mongoose": "^5.10.11",
     "multer": "^1.4.2",
@@ -40,15 +38,15 @@
     "validator": "^13.1.17"
   },
   "devDependencies": {
-	"@babel/preset-env": "^7.12.7",
+    "@babel/preset-env": "^7.12.7",
     "@shelf/jest-mongodb": "^1.2.3",
-    "cross-env": "^7.0.2",
     "dotenv": "^8.2.0",
-	"eslint": "^7.12.1",
+    "env-cmd": "^10.1.0",
+    "eslint": "^7.12.1",
     "eslint-config-airbnb-base": "^14.2.0",
-	"eslint-plugin-import": "^2.22.1",
-	"jest": "^26.6.3",
-	"jsdoc": "^3.6.6",
+    "eslint-plugin-import": "^2.22.1",
+    "jest": "^26.6.3",
+    "jsdoc": "^3.6.6",
     "nodemon": "^2.0.6",
     "superagent": "^6.1.0",
     "supertest": "^6.0.1"

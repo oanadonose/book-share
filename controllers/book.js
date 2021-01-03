@@ -147,6 +147,9 @@ export const updateBook = async (req, res) => {
 	if(req.body.genre) {
 		updates.genre = req.body.genre;
 	}
+	if(req.body.status) {
+		updates.status = req.body.status;
+	}
 	if(req.file) {
 		updates.photo = {
 			data: '',

@@ -15,7 +15,7 @@ app.use(cors());
 
 (async () => {
 	try {
-		await mongoose.connect(process.env.MONGOURL || process.env.dbURL, { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false });
+		await mongoose.connect(process.env.testdbURL || process.env.dbURL, { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false });
 	} catch (err) {
 		console.log('DB connection error', err);
 	}
